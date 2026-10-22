@@ -31,6 +31,7 @@ Cuatro tablas exportadas de ITACA como ficheros XML:
 - Contenidos
 - Calificaciones
 - Cursos
+- Grupos
 
 | Tabla | Contenido | Campos Clave |
 | --- | --- | --- |
@@ -38,11 +39,12 @@ Cuatro tablas exportadas de ITACA como ficheros XML:
 | Contenidos | Módulos que se imparten en cada curso | Anyo, Curso, Modulo, Nombre_Modulo|
 | Calificaciones | Nota de cada alumno en cada módulo y evaluación | Anyo, NIA, Curso, Modulo, Nota, Evaluacion |
 | Cursos | Catálogo jerarquico de cursos y ciclos formativos | Anyo, Codigo, Nombre,Padre |
+| Grupos | Grupos de los módulos que se imparten en el centro | Codigo, nombre, ensenanza, linea, turno, modalidad, aula, capacidad |
 
 
 | Fuente | URL / Origen | Formato | Frecuencia actualización | Licencia | Última ingesta |
 | --- | --- | --- | --- | --- | --- |
-| ITACA | [URL] | XML | Única | [Licencia] | [Fecha] |
+| AULES | ITACA | XML | Única | SIN LICENCIA | 22/10/2026 |
 
 >[!NOTE]
 La tabla de arriba no es definitivo, se irá actualizando a medida que avance el proyecto.
