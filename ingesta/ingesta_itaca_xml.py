@@ -67,4 +67,4 @@ if __name__ == "__main__":
         try:
             guardar(parsear_xml(tabla), tabla)
         except (OSError, ET.ParseError) as e:
-            logger.error(str(e))
+            logger.error("Error en la tabla %s con el mensaje: %s", tabla, str(e))
