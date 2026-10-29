@@ -102,7 +102,7 @@ Perderemos los datos que no estén guardados en volumenes persistidos
 
 ## Como realizar la ingesta
 
-Para realizar la ingest, deberás de tener tus datos estructurado en una carpeta general y dentro de ella una/unas carpetas con el curso (por ejemplo 2021-22) y dentro de ella los 4 ficheros xml. Con esta estructura:
+Para realizar la ingesta, deberás de tener tus datos estructurado en una carpeta general y dentro de ella una/unas carpetas con el curso (por ejemplo 2021-22) y dentro de ella los 4 ficheros xml. Con esta estructura:
 ```
 Carpeta
     2021-22
@@ -117,6 +117,8 @@ Carpeta
 Ejecutas el siguiente comando desde la raíz del proyecto:
 `python ingesta/ingesta_itaca_xml.py ruta`
 Donde **ruta** es la ruta absoluta/relativa a donde tengas la carpeta con los datos.
+
+El resultado quedará en la carpeta **data/raw**
 
 ## Bitácora de prácticas
 
@@ -140,12 +142,14 @@ Donde **ruta** es la ruta absoluta/relativa a donde tengas la carpeta con los da
 - Pasos realizados:
     1. Descargarse los datos
     2. Crear el script ingesta_itaca_xml.py
-    3. Lectura de atributos con el paquete **xml.etreeElementTree**
+    3. Lectura de atributos con el paquete **xml.etree.ElementTree**
     4. Uso de comodines especiales en la búsqueda de ficheros con el paquete **glob**
     5. Anonimización de NIA con el paquete **hashlib**
-    6. Registrar logs con el paquete **logger**
+    6. Registrar logs con el paquete **logging**
     7. Probar si funciona
-- Problemas encontrados y solución: Completar el código proporcionado por el profesor mediante búsqueda en internet.
+- Problemas encontrados y solución: 
+    1. **findtext** devolvía **None** porque los datos están en los atributos, usé **get()** para acceder a los atributos
+    2. **e.msg** no existe en **OSError** y se solucionó conviertiendolo a texto con **str(e)**
 - Resultado: ![Código python](<resources/img/Resultados bloque 1.png>)
 
 ### Bloque 2 - Bases de datos NoSQL
@@ -227,7 +231,7 @@ Las 2–3 decisiones de diseño más importantes, con la alternativa descartada.
 
 | Decisión | Alternativa descartada | Motivo |
 | --- | --- | --- |
-| [] | [] | [] |
+| Obtener y añadir anyo desde el nodo raíz **centro** y su atributo **curso** en el XML | No incluirlo | Si no se incluye, los 5 años se mezclarían dentro del mismo fichero |
 
 ### Incidencias resueltas
 
