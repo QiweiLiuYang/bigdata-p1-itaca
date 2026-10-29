@@ -24,27 +24,26 @@ graph LR
     F --> G[Modelo predictivo]
 ```
 
-## Fuente de datos
+## Fuentes de datos
 
 Cuatro tablas exportadas de ITACA como ficheros XML:
 - Alumnos
 - Contenidos
 - Calificaciones
 - Cursos
-- Grupos
 
+De los cuales consumiremos las siguientes columnas:
 | Tabla | Contenido | Campos Clave |
 | --- | --- | --- |
-| Alumnos | Un registro por alumno y año académico | Anyo, NIA, Curso, PrimSeg, Ciclo, Grado, Familia, Turno, Grupo |
-| Contenidos | Módulos que se imparten en cada curso | Anyo, Curso, Modulo, Nombre_Modulo|
-| Calificaciones | Nota de cada alumno en cada módulo y evaluación | Anyo, NIA, Curso, Modulo, Nota, Evaluacion |
-| Cursos | Catálogo jerarquico de cursos y ciclos formativos | Anyo, Codigo, Nombre,Padre |
-| Grupos | Grupos de los módulos que se imparten en el centro | Codigo, nombre, ensenanza, linea, turno, modalidad, aula, capacidad |
+| Alumnos | Un registro por alumno y año académico | NIA, sexo, nacionalidad, provincia, municipio, ensenanza, curso, grupo, turno, linea,modalidad, repite, estado_matricula, tipo_matricula, fecha_matricula, fecha_ingreso_centro |
+| Contenidos | Módulos que se imparten en cada curso | codigo, nombre_cas, nombre_val, ensenanza, curso |
+| Calificaciones | Nota de cada alumno en cada módulo y evaluación | evaluacion, alumno, ensenanza, curso, contenido,bloque_contenido, nota_numerica, tipo_nota |
+| Cursos | Catálogo jerarquico de cursos y ciclos formativos | codigo, nombre_cas, nombre_val, abreviatura, ensenanza, padre |
 
 
 | Fuente | URL / Origen | Formato | Frecuencia actualización | Licencia | Última ingesta |
 | --- | --- | --- | --- | --- | --- |
-| AULES | ITACA | XML | Única | SIN LICENCIA | 22/10/2026 |
+| AULES | ITACA | XML | Única | SIN LICENCIA | 29/10/2026 |
 
 >[!NOTE]
 La tabla de arriba no es definitivo, se irá actualizando a medida que avance el proyecto.
@@ -55,9 +54,12 @@ Estas son las carpetas del repositorio:
 
 | Carpeta | Contenido |
 | --- | --- |
-| dashboard/ | [dashboard] |
-| etl | [etl] |
-| ingesta | [ingesta] |
+| dashboard/ | Vacía de momento |
+| etl | Vacía de momento |
+| data/curated | Vacía de momento |
+| data/processed | Vacía de momento |
+| data/raw | Resultados en .json de la ingesta |
+| ingesta | Scripts para ingestar |
 
 ## Entorno
 
@@ -98,23 +100,53 @@ Perderemos los datos que no estén guardados en volumenes persistidos
 
 `docker compose down`
 
+## Como realizar la ingesta
+
+Para realizar la ingest, deberás de tener tus datos estructurado en una carpeta general y dentro de ella una/unas carpetas con el curso (por ejemplo 2021-22) y dentro de ella los 4 ficheros xml. Con esta estructura:
+```
+Carpeta
+    2021-22
+        alumnos.xml
+        ...
+    2022-23
+        alumnos.xml
+        ...
+    ...
+```
+
+Ejecutas el siguiente comando desde la raíz del proyecto:
+`python ingesta/ingesta_itaca_xml.py ruta`
+Donde **ruta** es la ruta absoluta/relativa a donde tengas la carpeta con los datos.
+
 ## Bitácora de prácticas
 
 > Cumplimentar al finalizar la práctica
 
 ### Bloque 0 - Entorno
 
-- Objetivo: [ ]
-- Pasos realizados: [ ]
-- Problemas encontrados y solución: [ ]
-- Resultado: [capturas, enlaces]
+- Objetivo: Crear la estructura básica del proyecto
+- Pasos realizados: 
+  - Creación del repositorio
+  - Creación de las carpetas
+  - Creación del README.md
+  - Creación del docker-compose.yml
+  - Creación del entorno con pyenv y venv
+- Problemas encontrados y solución: Ningún problema encontrado
+- Resultado: Este mismo [repositorio](https://github.com/QiweiLiuYang/bigdata-p1-itaca). ![Foto repositorio](<resources/img/Captura repositorio.png>)
 
 ### Bloque 1 - Ingesta batch
 
-- Objetivo: [ ]
-- Pasos realizados: [ ]
-- Problemas encontrados y solución: [ ]
-- Resultado: [ ]
+- Objetivo: Ingestar los distintos archivos xml para transformarlos a JSON
+- Pasos realizados:
+    1. Descargarse los datos
+    2. Crear el script ingesta_itaca_xml.py
+    3. Lectura de atributos con el paquete **xml.etreeElementTree**
+    4. Uso de comodines especiales en la búsqueda de ficheros con el paquete **glob**
+    5. Anonimización de NIA con el paquete **hashlib**
+    6. Registrar logs con el paquete **logger**
+    7. Probar si funciona
+- Problemas encontrados y solución: Completar el código proporcionado por el profesor mediante búsqueda en internet.
+- Resultado: ![Código python](<resources/img/Resultados bloque 1.png>)
 
 ### Bloque 2 - Bases de datos NoSQL
 
