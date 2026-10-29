@@ -56,13 +56,13 @@ def guardar(datos: list, nombre: str) -> None:
     with open(f"{ruta}/{nombre}.json", "w", encoding="UTF-8") as f:
         json.dump(datos, f, ensure_ascii=False, indent=2)
 
-    logger.info(f"Guardados %d registros en %s", len(datos), ruta)
+    logger.info("Guardados %d registros en %s", len(datos), ruta)
 
 
 if __name__ == "__main__":
     if ORIGIN == None:
         logger.error("Has introducido una URI inválida o has introducido más de un argumento")
-        exit(1)
+        sys.exit(1)
     for tabla in TABLAS:
         try:
             guardar(parsear_xml(tabla), tabla)
