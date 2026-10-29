@@ -1,6 +1,5 @@
 import glob, hashlib, os, json, logging, sys
 import xml.etree.ElementTree as ET
-from functools import cache
 from datetime import date
 
 # Logs
@@ -48,15 +47,16 @@ def anonimizar_nia(nia: str) -> str:
     return hashlib.sha256(str(nia).encode()).hexdigest()[:10]
 
 
-def guardar(datos: dict, nombre: str) -> None:
+def guardar(datos: list, nombre: str) -> None:
     fecha = date.today().isoformat()
     ruta = f"data/raw/{fecha}"
+    
     os.makedirs(ruta, exist_ok=True)
 
     with open(f"{ruta}/{nombre}.json", "w", encoding="UTF-8") as f:
         json.dump(datos, f, ensure_ascii=False, indent=2)
 
-    logger.info(f"Guardados {len(datos)} registros en {ruta}")
+    logger.info(f"Guardados %d registros en %s", len(datos), ruta)
 
 
 if __name__ == "__main__":
@@ -67,4 +67,4 @@ if __name__ == "__main__":
         try:
             guardar(parsear_xml(tabla), tabla)
         except (OSError, ET.ParseError) as e:
-            logger.error(e.msg())
+            logger.error(str(e))
