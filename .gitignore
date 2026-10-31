@@ -4,3 +4,4 @@ data/
 
 # Entorno y versiones
 .python-version
+.venv
