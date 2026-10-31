@@ -24,7 +24,7 @@ graph LR
     F --> G[Modelo predictivo]
 ```
 
-## Fuente de datos
+## Fuentes de datos
 
 Cuatro tablas exportadas de ITACA como ficheros XML:
 - Alumnos
@@ -32,17 +32,18 @@ Cuatro tablas exportadas de ITACA como ficheros XML:
 - Calificaciones
 - Cursos
 
+De los cuales consumiremos las siguientes columnas:
 | Tabla | Contenido | Campos Clave |
 | --- | --- | --- |
-| Alumnos | Un registro por alumno y año académico | Anyo, NIA, Curso, PrimSeg, Ciclo, Grado, Familia, Turno, Grupo |
-| Contenidos | Módulos que se imparten en cada curso | Anyo, Curso, Modulo, Nombre_Modulo|
-| Calificaciones | Nota de cada alumno en cada módulo y evaluación | Anyo, NIA, Curso, Modulo, Nota, Evaluacion |
-| Cursos | Catálogo jerarquico de cursos y ciclos formativos | Anyo, Codigo, Nombre,Padre |
+| Alumnos | Un registro por alumno y año académico | NIA, sexo, nacionalidad, provincia, municipio, ensenanza, curso, grupo, turno, linea,modalidad, repite, estado_matricula, tipo_matricula, fecha_matricula, fecha_ingreso_centro |
+| Contenidos | Módulos que se imparten en cada curso | codigo, nombre_cas, nombre_val, ensenanza, curso |
+| Calificaciones | Nota de cada alumno en cada módulo y evaluación | evaluacion, alumno, ensenanza, curso, contenido,bloque_contenido, nota_numerica, tipo_nota |
+| Cursos | Catálogo jerarquico de cursos y ciclos formativos | codigo, nombre_cas, nombre_val, abreviatura, ensenanza, padre |
 
 
 | Fuente | URL / Origen | Formato | Frecuencia actualización | Licencia | Última ingesta |
 | --- | --- | --- | --- | --- | --- |
-| ITACA | [URL] | XML | Única | [Licencia] | [Fecha] |
+| AULES | ITACA | XML | Única | SIN LICENCIA | 29/10/2026 |
 
 >[!NOTE]
 La tabla de arriba no es definitivo, se irá actualizando a medida que avance el proyecto.
@@ -53,13 +54,38 @@ Estas son las carpetas del repositorio:
 
 | Carpeta | Contenido |
 | --- | --- |
-| dashboard/ | [dashboard] |
-| etl | [etl] |
-| ingesta | [ingesta] |
+| dashboard/ | Vacía de momento |
+| etl | Vacía de momento |
+| data/curated | Vacía de momento |
+| data/processed | Vacía de momento |
+| data/raw | Resultados en .json de la ingesta |
+| ingesta | Scripts para ingestar |
 
-## Como desplegar el entorno
+## Entorno
 
-Con el **.env.example** que nos descargaremos, lo copiamos al que utiliza el repositorio.
+### Anclar la versión de python del entorno
+
+Usamos pyenv para que siempre use la misma versión:
+`pyenv local 3.14.4`
+
+### Crear el entorno
+
+Usaremos un entorno aislado para no tener conflictos con los paquetes.
+`python -m venv .venv`
+
+Lo activamos con:
+`source .venv/bin/activate`
+
+Lo desactivamos escribiendo `deactivate` en la terminal.
+
+### Requisitos del proyecto
+
+Los requisitos están recogidos en **requirements.txt**. Se instala con:
+`pip install -r requirements.txt`
+
+### Como desplegar el entorno
+
+Con el **.env.example** que nos descargaremos, lo copiamos al que utiliza el repositorio y cumplimentamos los datos que sean necesarios.
 `cp .env.example .env`
 
 Levantamos los contenedores en modo *detached* con:
@@ -74,23 +100,57 @@ Perderemos los datos que no estén guardados en volumenes persistidos
 
 `docker compose down`
 
+## Como realizar la ingesta
+
+Para realizar la ingesta, deberás de tener tus datos estructurado en una carpeta general y dentro de ella una/unas carpetas con el curso (por ejemplo 2021-22) y dentro de ella los 4 ficheros xml. Con esta estructura:
+```
+Carpeta
+    2021-22
+        alumnos.xml
+        ...
+    2022-23
+        alumnos.xml
+        ...
+    ...
+```
+
+Ejecutas el siguiente comando desde la raíz del proyecto:
+`python ingesta/ingesta_itaca_xml.py ruta`
+Donde **ruta** es la ruta absoluta/relativa a donde tengas la carpeta con los datos.
+
+El resultado quedará en la carpeta **data/raw**
+
 ## Bitácora de prácticas
 
 > Cumplimentar al finalizar la práctica
 
 ### Bloque 0 - Entorno
 
-- Objetivo: [ ]
-- Pasos realizados: [ ]
-- Problemas encontrados y solución: [ ]
-- Resultado: [capturas, enlaces]
+- Objetivo: Crear la estructura básica del proyecto
+- Pasos realizados: 
+  - Creación del repositorio
+  - Creación de las carpetas
+  - Creación del README.md
+  - Creación del docker-compose.yml
+  - Creación del entorno con pyenv y venv
+- Problemas encontrados y solución: Ningún problema encontrado
+- Resultado: Este mismo [repositorio](https://github.com/QiweiLiuYang/bigdata-p1-itaca). ![Foto repositorio](<resources/img/Captura repositorio.png>)
 
 ### Bloque 1 - Ingesta batch
 
-- Objetivo: [ ]
-- Pasos realizados: [ ]
-- Problemas encontrados y solución: [ ]
-- Resultado: [ ]
+- Objetivo: Ingestar los distintos archivos xml para transformarlos a JSON
+- Pasos realizados:
+    1. Descargarse los datos
+    2. Crear el script ingesta_itaca_xml.py
+    3. Lectura de atributos con el paquete **xml.etree.ElementTree**
+    4. Uso de comodines especiales en la búsqueda de ficheros con el paquete **glob**
+    5. Anonimización de NIA con el paquete **hashlib**
+    6. Registrar logs con el paquete **logging**
+    7. Probar si funciona
+- Problemas encontrados y solución: 
+    1. **findtext** devolvía **None** porque los datos están en los atributos, usé **get()** para acceder a los atributos
+    2. **e.msg** no existe en **OSError** y se solucionó conviertiendolo a texto con **str(e)**
+- Resultado: ![Código python](<resources/img/Resultados bloque 1.png>)
 
 ### Bloque 2 - Bases de datos NoSQL
 
@@ -171,7 +231,7 @@ Las 2–3 decisiones de diseño más importantes, con la alternativa descartada.
 
 | Decisión | Alternativa descartada | Motivo |
 | --- | --- | --- |
-| [] | [] | [] |
+| Obtener y añadir anyo desde el nodo raíz **centro** y su atributo **curso** en el XML | No incluirlo | Si no se incluye, los 5 años se mezclarían dentro del mismo fichero |
 
 ### Incidencias resueltas
 
