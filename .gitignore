@@ -1,2 +1,6 @@
 # Datos y credenciales
 .env
+data/
+
+# Entorno y versiones
+.python-version
