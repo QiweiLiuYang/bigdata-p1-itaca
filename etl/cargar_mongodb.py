@@ -76,7 +76,7 @@ def cargar_cursos() -> None:
 
 def crear_indices() -> None:
     db["calificaciones"].create_index([("curso", 1), ("anyo", 1), ("evaluacion", 1)])
-    db["calificaciones"].create_index("NIA")
+    db["calificaciones"].create_index("nia")
     db["alumnos"].create_index([("nia", 1), ("anyo", 1)])
     db["contenidos"].create_index([("modulo", 1), ("anyo", 1), ("curso", 1)], unique=True)
 
