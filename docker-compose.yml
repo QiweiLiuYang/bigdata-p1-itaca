@@ -6,7 +6,7 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONG_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin}
     volumes:
       - mongo-data:/data/db
     networks:
@@ -46,3 +46,7 @@ services:
 volumes:
   mongo-data:
   influxdb-data:
+
+networks:
+  bigdata-net:
+    driver: bridge
