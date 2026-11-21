@@ -72,9 +72,17 @@ def cargar_cursos() -> None:
     ]
 
 
+def crear_indices() -> None:
+    db["calificaciones"].create_index([("curso", 1), ("anyo", 1), ("evaluacion", 1)])
+    db["calificaciones"].create_index("nia")
+    db["alumnos"].create_index([("nia", 1), ("anyo", 1)], unique=True)
+    db["contenidos"].create_index([("modulo", 1), ("anyo", 1), ("curso", 1)], unique=True)
+
+
 if __name__ == "__main__":
     cargar_contenidos()
     cargar_alumnos()
     cargar_calificaciones()
     cargar_cursos()
+    crear_indices()
     print("Carga completada.")
