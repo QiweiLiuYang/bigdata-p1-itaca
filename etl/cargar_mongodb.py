@@ -35,7 +35,7 @@ def cargar_alumnos() -> None:
     alumnos = leer_json("alumnos.json")
     documentos = [
         {
-            "nia": a["nia"],
+            "nia": a["NIA"],
             "anyo": a["anyo"],
             "curso": a["curso"],
             "turno": a["turno"],
@@ -61,22 +61,23 @@ def cargar_calificaciones() -> None:
 
 
 def cargar_cursos() -> None:
-    cursos = leer_json("cursos")
+    cursos = leer_json("cursos.json")
     documentos = [
         {
             "anyo": c["anyo"],
             "codigo": c["codigo"],
             "nombre_cas": c["nombre_cas"],
-            "abreviatura": c["abreviatura"]
+            "abreviatura": c["abreviatura"],
             "padre": c["padre"]
         } for c in cursos
     ]
+    insertar("cursos", documentos)
 
 
 def crear_indices() -> None:
     db["calificaciones"].create_index([("curso", 1), ("anyo", 1), ("evaluacion", 1)])
-    db["calificaciones"].create_index("nia")
-    db["alumnos"].create_index([("nia", 1), ("anyo", 1)], unique=True)
+    db["calificaciones"].create_index("NIA")
+    db["alumnos"].create_index([("nia", 1), ("anyo", 1)])
     db["contenidos"].create_index([("modulo", 1), ("anyo", 1), ("curso", 1)], unique=True)
 
 
