@@ -66,7 +66,8 @@ def cargar_cursos() -> None:
         {
             "anyo": c["anyo"],
             "codigo": c["codigo"],
-            "nombre_curso": c["nombre_cas"],
+            "nombre_cas": c["nombre_cas"],
+            "abreviatura": c["abreviatura"]
             "padre": c["padre"]
         } for c in cursos
     ]
