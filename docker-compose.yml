@@ -21,7 +21,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD:-admin}
       - ME_CONFIG_MONGODB_URL=mongodb://admin:${MONGO_PASSWORD:-admin}@mongo:27017/
-      - ME_CONFIG_MONGODB_ENABLE=true
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
     depends_on:
       - mongo
     networks:
