@@ -55,7 +55,8 @@ Estas son las carpetas del repositorio:
 | Carpeta | Contenido |
 | --- | --- |
 | dashboard/ | Vacía de momento |
-| etl | Vacía de momento |
+| etl | Scripts de carga y transformación en MongoDB |
+| docs | Capturas de las prácticas |
 | data/curated | Vacía de momento |
 | data/processed | Vacía de momento |
 | data/raw | Resultados en .json de la ingesta |
@@ -120,6 +121,22 @@ Donde **ruta** es la ruta absoluta/relativa a donde tengas la carpeta con los da
 
 El resultado quedará en la carpeta **data/raw**
 
+## Como cargar los datos en MongoDB
+
+Con los contenedores levantados (`docker compose up -d`), ejecutamos desde la raíz del proyecto **en este orden**:
+
+```bash
+python etl/cargar_mongodb.py       # carga los 4 JSON de data/raw y crea los índices
+python etl/aplanar_cursos.py       # aplana los cursos -> cursos_planos
+python etl/modulos_con_curso.py    # mete el curso aplanado en cada módulo -> modulos
+```
+
+Se puede repetir la carga sin duplicar datos, porque cada colección se borra antes de insertarla.
+
+Para comprobar los datos:
+- Mongo Express en http://localhost:8081
+- mongosh con `docker exec -it bigdata-mongo mongosh -u admin -p admin --authenticationDatabase admin itaca`
+
 ## Bitácora de prácticas
 
 > Cumplimentar al finalizar la práctica
@@ -154,10 +171,54 @@ El resultado quedará en la carpeta **data/raw**
 
 ### Bloque 2 - Bases de datos NoSQL
 
-- Objetivo: [ ]
-- Pasos realizados: [ ]
-- Problemas encontrados y solución: [ ]
-- Resultado: [ ]
+- Objetivo: Cargar en **MongoDB** los datos ingestados en el Bloque 1
+- Pasos realizados:
+    1. Añadir **mongo** y **mongo-express** al docker-compose.yml con usuario admin
+    2. Crear **cargar_mongodb.py** que carga los 4 JSON, pasa la nota a número y crea los índices
+    3. Crear **aplanar_cursos.py** que aplana la jerarquía de cursos con **$lookup** y lo guarda en cursos_planos
+    4. Crear **modulos_con_curso.py** que mete el curso aplanado en cada módulo y lo guarda en modulos
+    5. Crear **numero_registros.py** para comparar los registros de los JSON con MongoDB
+    6. Verificar la carga con mongosh
+- Problemas encontrados y solución: en [Incidencias resueltas](#incidencias-resueltas)
+- Resultado: en [Verificación de la carga](#verificación-de-la-carga)
+
+#### Índices
+
+- **calificaciones** por curso, anyo y evaluacion, que es el filtro que más se usa
+- **calificaciones** por nia, para buscar las notas de un alumno
+- **alumnos** por nia y anyo, no único porque hay alumnos repetidos el mismo año (bajas y nuevas matrículas)
+- **contenidos** y **modulos** por modulo, anyo y curso, único porque el mismo módulo sale en varios cursos
+
+Con índice la consulta mira 666 documentos y sin índice los 106814.
+
+![Uso de índices](docs/imagenes_bloque2/uso_de_indices_mongosh.png)
+
+#### Verificación de la carga
+
+1. El número de documentos coincide con los JSON
+
+![Documentos por colección](docs/imagenes_bloque2/documentos_coleccion_coincide_con_ingestados.png)
+
+2. Consulta de las notas de un curso. Las notas van de 0 a 10 y los módulos son de ese curso
+
+![Consultas](docs/imagenes_bloque2/consultas_mongosh.png)
+
+3. Nota media por grupo en la 2ª evaluación, se ejecuta sin errores
+
+![Nota media por grupo](docs/imagenes_bloque2/nota_media_mongosh.png)
+
+4. Módulos con el curso embebido en Mongo Express
+
+![Módulos en Mongo Express](docs/imagenes_bloque2/modulos_mongo_express.png)
+
+#### Decisiones sobre los datos
+
+- La nota pasa a número porque si no la media salía null. Las notas en blanco se quedan en null
+- En **modulos_con_curso.py** solo uno por curso_codigo porque la condición de grado con ensenanza de la teoría nunca se cumple
+- En la nota media uso **$limit 1** en el $lookup para no contar dos veces a los alumnos repetidos
+- En la nota media quito los alumnos sin grupo
+- Las notas sin alumno se quedan fuera por el $unwind
+- Las colecciones se borran antes de cargarlas para no duplicar datos
 
 ### Bloque 3 - Data Lake
 
@@ -232,12 +293,15 @@ Las 2–3 decisiones de diseño más importantes, con la alternativa descartada.
 | Decisión | Alternativa descartada | Motivo |
 | --- | --- | --- |
 | Obtener y añadir anyo desde el nodo raíz **centro** y su atributo **curso** en el XML | No incluirlo | Si no se incluye, los 5 años se mezclarían dentro del mismo fichero |
+| Índice `alumnos(nia, anyo)` no único | Índice único, como propone la práctica | Hay alumnos repetidos el mismo año por bajas y nuevas matrículas, así que no se puede crear |
 
 ### Incidencias resueltas
 
 | Problema | Causa | Solución |
 | --- | --- | --- |
-| [] | [] | [] |
+| Los módulos no recibían los datos del curso | La condición `grado == ensenanza` nunca se cumple | Unir solo por `curso_codigo` |
+| `DuplicateKeyError` al crear el índice único de `alumnos` | Alumnos repetidos el mismo año | Índice no único |
+| La nota media salía `null` | `nota` se guardaba como texto | Pasar a `float` y dejar en `null` las notas en blanco, porque `float(" ")` falla |
 
 ## Resultado final
 
