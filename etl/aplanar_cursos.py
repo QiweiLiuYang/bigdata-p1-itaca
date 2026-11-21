@@ -8,9 +8,9 @@ pipeline = [
     {"$match": {"nombre_cas": {"$regex": "^(Primero|Segundo)"}}},
     {"$lookup": {"from": "cursos", "localField": "padre", "foreignField": "codigo", "as": "ciclo"}},
     {"$unwind": "$ciclo"},
-    {"$lookup": {"from": "ciclo", "localField": "ciclo.padre", "foreignField": "codigo", "as": "grado"}},
+    {"$lookup": {"from": "cursos", "localField": "ciclo.padre", "foreignField": "codigo", "as": "grado"}},
     {"$unwind": "$grado"},
-    {"$lookup": {"from": "grado", "localField": "grado.padre", "foreignField": "codigo", "as": "familia"}},
+    {"$lookup": {"from": "cursos", "localField": "grado.padre", "foreignField": "codigo", "as": "familia"}},
     {"$unwind": "$familia"},
 
     {"$project": {
@@ -23,7 +23,7 @@ pipeline = [
         "curso_codigo": "$codigo",
         "curso_abreviatura": "$abreviatura"
     }},
-    {"$out": "curso_planos"}
+    {"$out": "cursos_planos"}
 ]
 
 coleccion.aggregate(pipeline)
