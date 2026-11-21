@@ -27,25 +27,8 @@ services:
     networks:
       - bigdata-net
 
-  influxdb:
-    image: influxdb:3-core
-    container_name: bigdata-influxdb
-    command: >
-      influxdb3 serve
-      --node-id nodo0
-      --object-store file
-      --data-dir /var/lib/influxdb3
-      --without-auth
-    ports:
-      - "8181:8181"
-    volumes:
-      - influxdb-data:/var/lib/influxdb3
-    networks:
-      - bigdata-net
-
 volumes:
   mongo-data:
-  influxdb-data:
 
 networks:
   bigdata-net:
