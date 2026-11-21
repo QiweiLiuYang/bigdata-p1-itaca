@@ -53,7 +53,8 @@ def cargar_calificaciones() -> None:
             "anyo": c["anyo"],
             "curso": c["curso"],
             "modulo": c["contenido"],
-            "nota": c["nota_numerica"],
+            "nota": float(c["nota_numerica"]) if c["nota_numerica"].strip() else None,
+            "tipo_nota": c["tipo_nota"],
             "evaluacion": c["evaluacion"]
         } for c in calificaciones
     ]
